@@ -133,7 +133,7 @@ colnames(wikiaves)[5] = "total_registros"
 
 head(wikiaves)
 
-write.csv(wikiaves, "C:/Users/anderson/OneDrive/Documents/Pesquisa/Andrei_Manu/wikiaves_ao.csv", row.names = FALSE)
+write.csv(wikiaves, "C:/Users/anderson/OneDrive/Documents/Pesquisa/Andrei_Manu/wikiaves_areas_observacao.csv", row.names = FALSE)
 
 # Matriz de incidencia de aves em UCs
 ucs_spp = tapply(listas_aves_df$registros,
