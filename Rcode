@@ -133,7 +133,7 @@ colnames(wikiaves)[5] = "total_registros"
 
 head(wikiaves)
 
-write.csv(wikiaves, "wikiaves_ao.csv", row.names = FALSE)
+write.csv(wikiaves, "C:/Users/anderson/OneDrive/Documents/Pesquisa/Andrei_Manu/wikiaves_ao.csv", row.names = FALSE)
 
 # Matriz de incidencia de aves em UCs
 ucs_spp = tapply(listas_aves_df$registros,
@@ -260,11 +260,8 @@ time.taken1; time.taken2
 ### Adiciona informacao sobre os municipios ###
 ###############################################
 
-# Reorganiza as colunas
-listas_municipios_df = listas_municipios_df[, c(2, 3, 4, 5, 1)]
-
 # Renomeia uma coluna
-colnames(listas_municipios_df)[5] = "codigo_municipio"
+colnames(listas_municipios_df)[1] = "codigo_municipio"
 
 # Adiciona o nome dos municipios
 listas_municipios_df$nome_municipio = municipios_ibge$NM_MUN[match(listas_municipios_df$codigo_municipio,
@@ -286,7 +283,10 @@ listas_municipios_df$longitude_centroid = municipios_ibge$LONG_CENTROID[match(li
 listas_municipios_df$latitude_centroid = municipios_ibge$LAT_CENTROID[match(listas_municipios_df$codigo_municipio,
                                                                             municipios_ibge$CD_MUN)]
 
+# Reorganiza as colunas
+listas_municipios_df = listas_municipios_df[, c(1, 6, 7, 8, 9, 10, 2, 3, 4, 5)]
+
 # Visualiza a tabela de dados
 head(listas_municipios_df)
 
-write.csv(listas_municipios_df, "wikiaves_municipios.csv", row.names = FALSE)
+write.csv(listas_municipios_df, "C:/Users/anderson/OneDrive/Documents/Pesquisa/Andrei_Manu/wikiaves_municipios.csv", row.names = FALSE)
