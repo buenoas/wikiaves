@@ -276,12 +276,12 @@ listas_municipios_df$area = municipios_ibge$AREA_KM2[match(listas_municipios_df$
                                                            municipios_ibge$CD_MUN)]
 
 # Adiciona o longitude do centroide
-listas_municipios_df$longitude_centroid = municipios_ibge$LONG_CENTROID[match(listas_municipios_df$codigo_municipio,
-                                                                              municipios_ibge$CD_MUN)]
+listas_municipios_df$longitude_centroide = municipios_ibge$LONG_CENTROID[match(listas_municipios_df$codigo_municipio,
+                                                                               municipios_ibge$CD_MUN)]
 
 # Adiciona a latitude do centroide
-listas_municipios_df$latitude_centroid = municipios_ibge$LAT_CENTROID[match(listas_municipios_df$codigo_municipio,
-                                                                            municipios_ibge$CD_MUN)]
+listas_municipios_df$latitude_centroide = municipios_ibge$LAT_CENTROID[match(listas_municipios_df$codigo_municipio,
+                                                                             municipios_ibge$CD_MUN)]
 
 # Reorganiza as colunas
 listas_municipios_df = listas_municipios_df[, c(1, 6, 7, 8, 9, 10, 2, 3, 4, 5)]
