@@ -4,7 +4,6 @@
 
 library(stringr)
 library(stringi)
-library(rgdal)
 
 
 #############################################################
@@ -134,7 +133,7 @@ colnames(wikiaves)[5] = "total_registros"
 
 head(wikiaves)
 
-#write.csv(wikiaves, "wikiaves.csv", row.names = FALSE)
+write.csv(wikiaves, "wikiaves_ao.csv", row.names = FALSE)
 
 # Matriz de incidencia de aves em UCs
 ucs_spp = tapply(listas_aves_df$registros,
@@ -153,6 +152,8 @@ ucs_spp[1:5,1:5]
 ####################################################
 ### Municipios do WikiAves com lista de especies ###
 ####################################################
+
+rm(list = ls())
 
 start.time <- Sys.time()
 
@@ -287,3 +288,5 @@ listas_municipios_df$latitude_centroid = municipios_ibge$LAT_CENTROID[match(list
 
 # Visualiza a tabela de dados
 head(listas_municipios_df)
+
+write.csv(listas_municipios_df, "wikiaves_municipios.csv", row.names = FALSE)
