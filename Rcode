@@ -1,3 +1,155 @@
+###############
+### PACOTES ###
+###############
+
+library(stringr)
+library(stringi)
+library(rgdal)
+
+
+#############################################################
+### Areas de observacao do WikiAves com lista de especies ###
+#############################################################
+
+url = "https://www.wikiaves.com.br/especies.php?&t=ao&ao="
+ao = 1:9999
+
+ao_com_lista = list()
+
+for (i in ao) {
+  
+  url_ao = paste0(url, ao[i])
+  
+  webpage = readLines(url_ao)[550]
+  
+  ao_com_lista[[i]] = ifelse(webpage == "\t\t\t\t\t\t\t\t\t\t\t<a href=\"/wiki/aves\" class=\"m-nav__link\">", FALSE, TRUE)
+  
+  print(i)
+  
+}
+
+ao_com_lista_df = data.frame(ao = ao,
+                             lista = unlist(ao_com_lista))
+
+ao_com_lista_vector = subset(ao_com_lista_df, lista == TRUE)$ao
+
+
+#####################################################################
+### Lista de area de observacao do WikiAves com lista de especies ###
+#####################################################################
+
+areas_observacao_list = list()
+
+for (i in ao_com_lista_vector) {
+  
+  webpage = readLines(paste0(url, i))
+  
+  area_observacao = webpage[5]
+  area_observacao = gsub("\t\t<title>Espécies Registradas em ", "", area_observacao)
+  area_observacao = gsub(" \\| Wiki Aves - A Enciclopédia das Aves do Brasil</title>", "", area_observacao)
+  
+  areas_observacao_list[[i]] = area_observacao
+  
+  print(i)
+  
+}
+
+areas_observacao = data.frame(nome = unlist(areas_observacao_list),
+                              ao = ao_com_lista_vector)
+
+head(areas_observacao)
+tail(areas_observacao)
+
+#write.csv(areas_observacao, "areas_observacao_wikiaves.csv", row.names = FALSE)
+
+
+############################################################
+### Lista de especies por area de observacao do WikiAves ###
+############################################################
+
+listas_aves = list()
+
+for (i in ao_com_lista_vector) {
+  
+  webpage = readLines(paste0(url, i))[550]
+  
+  x1 = strsplit(webpage, "<script> lsp")[[1]][-1]
+  
+  especies = list()
+  
+  for (j in 1:length(x1)) {
+    
+    x2 = strsplit(x1[j], ",")[[1]]
+    vetor_index = (length(x2)-4): length(x2)
+    
+    x3 = x2[vetor_index]
+    x4 = gsub("); </script>", "", x3)
+    x5 = gsub("'", "", x4)
+    x6 = trimws(x5)
+    
+    especies[[j]] = x6
+    
+    print(j)
+    
+  }
+  
+  especies[[length(x1)]] = gsub("\t\t\t\t\t\t\t\t</tbody>", "", especies[[length(x1)]])
+  
+  especies_df = data.frame(do.call(rbind, especies))
+  especies_df = especies_df[, c(1, 5, 4)]
+  colnames(especies_df) = c("especie", "sons", "fotos")
+  
+  listas_aves[[i]] = especies_df
+  
+}
+
+listas_aves = listas_aves[-which(sapply(listas_aves, is.null))]
+
+names(listas_aves) = areas_observacao$nome
+
+listas_aves_df = do.call(rbind, listas_aves)
+
+listas_aves_df$nome_ao = gsub("\\.[0-9]+", "", rownames(listas_aves_df))
+listas_aves_df$nome_ao = str_squish(listas_aves_df$nome_ao)
+listas_aves_df$nome_ao = str_to_upper(listas_aves_df$nome_ao)
+listas_aves_df$nome_ao = stri_trans_general(str = listas_aves_df$nome_ao,
+                                            id = "Latin-ASCII")
+
+listas_aves_df$sons = as.numeric(listas_aves_df$sons)
+listas_aves_df$fotos = as.numeric(listas_aves_df$fotos)
+listas_aves_df$registros = listas_aves_df$sons + listas_aves_df$fotos
+
+rownames(listas_aves_df) = NULL
+
+head(listas_aves_df)
+dim(listas_aves_df)
+
+# Organiza os dados
+wikiaves = listas_aves_df
+names(wikiaves)
+
+wikiaves = wikiaves[, c(4, 1, 2, 3, 5)]
+colnames(wikiaves)[1] = "area_observacao"
+colnames(wikiaves)[5] = "total_registros"
+
+head(wikiaves)
+
+#write.csv(wikiaves, "wikiaves.csv", row.names = FALSE)
+
+# Matriz de incidencia de aves em UCs
+ucs_spp = tapply(listas_aves_df$registros,
+                 list(listas_aves_df$nome_ao, listas_aves_df$especie),
+                 sum)
+
+ucs_spp[is.na(ucs_spp)] = 0
+dim(ucs_spp)
+ucs_spp[1:5,1:5]
+
+
+
+
+
+
 ####################################################
 ### Municipios do WikiAves com lista de especies ###
 ####################################################
@@ -7,7 +159,7 @@ start.time <- Sys.time()
 url_municipios = "https://www.wikiaves.com.br/especies.php?t=c&c="
 
 municipios_ibge = read.csv("https://raw.githubusercontent.com/buenoas/wikiaves/main/municipios_ibge.txt", sep = "\t")
-codigos_ibge = municipios_ibge$CD_MUN[1:5]
+codigos_ibge = municipios_ibge$CD_MUN
 
 
 municipios_com_lista = list()
@@ -99,7 +251,6 @@ dim(listas_municipios_df)
 
 end.time <- Sys.time()
 time.taken2 <- round(end.time - start.time, 2)
-
 
 time.taken1; time.taken2
 
