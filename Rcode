@@ -102,3 +102,37 @@ time.taken2 <- round(end.time - start.time, 2)
 
 
 time.taken1; time.taken2
+
+
+###############################################
+### Adiciona informacao sobre os municipios ###
+###############################################
+
+# Reorganiza as colunas
+listas_municipios_df = listas_municipios_df[, c(2, 3, 4, 5, 1)]
+
+# Renomeia uma coluna
+colnames(listas_municipios_df)[5] = "codigo_municipio"
+
+# Adiciona o nome dos municipios
+listas_municipios_df$nome_municipio = municipios_ibge$NM_MUN[match(listas_municipios_df$codigo_municipio,
+                                                                   municipios_ibge$CD_MUN)]
+
+# Adiciona o estado (UF)
+listas_municipios_df$estado = municipios_ibge$SIGLA_UF[match(listas_municipios_df$codigo_municipio,
+                                                             municipios_ibge$CD_MUN)]
+
+# Adiciona a area do municipio
+listas_municipios_df$area = municipios_ibge$AREA_KM2[match(listas_municipios_df$codigo_municipio,
+                                                           municipios_ibge$CD_MUN)]
+
+# Adiciona o longitude do centroide
+listas_municipios_df$longitude_centroid = municipios_ibge$LONG_CENTROID[match(listas_municipios_df$codigo_municipio,
+                                                                              municipios_ibge$CD_MUN)]
+
+# Adiciona a latitude do centroide
+listas_municipios_df$latitude_centroid = municipios_ibge$LAT_CENTROID[match(listas_municipios_df$codigo_municipio,
+                                                                            municipios_ibge$CD_MUN)]
+
+# Visualiza a tabela de dados
+head(listas_municipios_df)
