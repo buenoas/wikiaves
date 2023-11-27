@@ -33,9 +33,9 @@ ao_com_lista_df = data.frame(ao = ao,
 ao_com_lista_vector = subset(ao_com_lista_df, lista == TRUE)$ao
 
 
-#####################################################################
-### Lista de area de observacao do WikiAves com lista de especies ###
-#####################################################################
+######################################################################
+### Lista de areas de observacao do WikiAves com lista de especies ###
+######################################################################
 
 areas_observacao_list = list()
 
